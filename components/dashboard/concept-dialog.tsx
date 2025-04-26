@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { X, Save, Youtube, Maximize, Minimize, ChevronLeft, ChevronRight } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
@@ -73,6 +74,8 @@ export default function ConceptDialog({
   const handleSave = () => {
     onUpdateProgress(concept.id, isCompleted, notes || null, videos.length > 0 ? videos : null)
     setHasChanges(false)
+    
+    // No need to add toast here as it's already handled in the parent component's onUpdateProgress
   }
 
   const handleAddVideo = () => {

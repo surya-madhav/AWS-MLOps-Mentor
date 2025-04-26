@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
+import { toast } from "sonner"
 import ConceptCard from "./concept-card"
 import ConceptDialog from "./concept-dialog" // Changed to use dialog instead of inline detail
 import { updateProgress } from "@/app/actions/progress"
@@ -21,9 +22,10 @@ export default function ConceptsGrid({ topic, userId }: ConceptsGridProps) {
   const allContentItems = useMemo(() => {
     if (!topic || !topic.content_items) return []
 
-    return Object.entries(topic.content_items).flatMap(([type, items]: [string, any[]]) =>
-      items.map((item) => ({ ...item, type })),
-    )
+    return Object.entries(topic.content_items).flatMap(([type, items]) => {
+      // Check if items is an array before mapping
+      return Array.isArray(items) ? items.map((item) => ({ ...item, type })) : []
+    })
   }, [topic])
 
   // Memoize filtered concepts to prevent unnecessary recalculations
@@ -58,12 +60,21 @@ export default function ConceptsGrid({ topic, userId }: ConceptsGridProps) {
     try {
       const result = await updateProgress(userId, contentItemId, isCompleted, notes, videos)
       
-      if (!result.success) {
+      if (result.success) {
+        // Show success toast when concept is marked as complete or updated
+        if (isCompleted) {
+          toast.success("Concept marked as completed!")
+        } else {
+          toast.success("Progress updated successfully!")
+        }
+      } else {
         console.error("Failed to update progress:", result.error)
+        toast.error("Failed to update progress")
       }
       // Data will be refreshed automatically via revalidatePath in the server action
     } catch (error) {
       console.error("Failed to update progress:", error)
+      toast.error("Failed to update progress")
     }
   }
 

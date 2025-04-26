@@ -5,8 +5,31 @@ import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import DomainAccordion from "./domain-accordion"
 
+// Define interfaces for our data structure
+interface ContentItem {
+  id: string
+  name: string
+  content: string
+  type: string
+  // Other properties
+}
+
+interface Topic {
+  id: string
+  name: string
+  content_items: Record<string, ContentItem[]>
+  // Other properties
+}
+
+interface Domain {
+  id: string
+  name: string
+  topics: Topic[]
+  // Other properties
+}
+
 interface DashboardProps {
-  learningData: any[]
+  learningData: Domain[]
   userId: string
 }
 
@@ -19,12 +42,12 @@ export default function Dashboard({ learningData, userId }: DashboardProps) {
         .map((domain) => {
           // Filter topics that match the search query
           const filteredTopics = domain.topics.filter(
-            (topic) =>
+            (topic: Topic) =>
               topic.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
               // Check if any content items match
               Object.values(topic.content_items || {})
                 .flat()
-                .some((item: any) => item.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                .some((item: ContentItem) => item.name.toLowerCase().includes(searchQuery.toLowerCase())),
           )
 
           // Return domain with filtered topics
