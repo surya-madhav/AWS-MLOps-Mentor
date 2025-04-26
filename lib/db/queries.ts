@@ -525,7 +525,7 @@ export async function deleteDomain({ id }: { id: string }) {
 // Topic operations
 export async function getTopics() {
   try {
-    return await db.select().from(topics);
+    return await db.select().from(topics).orderBy(asc(topics.orderPosition));
   } catch (error) {
     console.error('Failed to get topics from database');
     throw error;
@@ -624,7 +624,7 @@ export async function deleteTopic({ id }: { id: string }) {
 // Content Items operations
 export async function getContentItems() {
   try {
-    return await db.select().from(contentItems);
+    return await db.select().from(contentItems).orderBy(asc(contentItems.type), asc(contentItems.orderPosition));
   } catch (error) {
     console.error('Failed to get content items from database');
     throw error;
@@ -671,11 +671,13 @@ export async function getContentItemsByTopicIdAndType({
 export async function createContentItem({
   topicId,
   type,
+  name,
   content,
   orderPosition,
 }: {
   topicId: string;
   type: 'concept' | 'aws_service' | 'framework' | 'algorithm';
+  name: string;
   content: string;
   orderPosition: number;
 }) {
@@ -685,6 +687,7 @@ export async function createContentItem({
       .values({
         topicId,
         type,
+        name,
         content,
         orderPosition,
         createdAt: new Date(),
@@ -699,10 +702,12 @@ export async function createContentItem({
 
 export async function updateContentItem({
   id,
+  name,
   content,
   orderPosition,
 }: {
   id: string;
+  name?: string;
   content?: string;
   orderPosition?: number;
 }) {
@@ -710,6 +715,7 @@ export async function updateContentItem({
     const [contentItem] = await db
       .update(contentItems)
       .set({
+        name,
         content,
         orderPosition,
       })
@@ -801,11 +807,7 @@ export async function getUserLearningData({ userId }: { userId: string }) {
         const topicsWithItems = await Promise.all(
           domainTopics.map(async (topic) => {
             // Get all content items for this topic
-            const topicContentItems = await db
-              .select()
-              .from(contentItems)
-              .where(eq(contentItems.topicId, topic.id))
-              .orderBy(asc(contentItems.type), asc(contentItems.orderPosition));
+            const topicContentItems = await getContentItemsByTopicId({ topicId: topic.id });
             
             // Get all user progress for content items in this topic
             const contentItemIds = topicContentItems.map(item => item.id);
