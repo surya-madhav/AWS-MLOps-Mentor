@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import ConceptCard from "./concept-card"
 import ConceptDialog from "./concept-dialog" // Changed to use dialog instead of inline detail
-// import { updateUserContentProgress } from "@/lib/db/queries"
+import { updateProgress } from "@/app/actions/progress"
 
 interface ConceptsGridProps {
   topic: any
@@ -56,16 +56,12 @@ export default function ConceptsGrid({ topic, userId }: ConceptsGridProps) {
 
   const handleUpdateProgress = async (contentItemId: string, isCompleted: boolean, notes?: any, videos?: any) => {
     try {
-      await updateUserContentProgress({
-        userId,
-        contentItemId,
-        isCompleted,
-        notes,
-        videos,
-      })
-
-      // No need to update local state here as we'll close the dialog
-      // and the parent component should handle refetching if needed
+      const result = await updateProgress(userId, contentItemId, isCompleted, notes, videos)
+      
+      if (!result.success) {
+        console.error("Failed to update progress:", result.error)
+      }
+      // Data will be refreshed automatically via revalidatePath in the server action
     } catch (error) {
       console.error("Failed to update progress:", error)
     }

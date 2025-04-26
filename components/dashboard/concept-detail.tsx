@@ -71,7 +71,7 @@ export default function ConceptDetail({ concept, onClose, onUpdateProgress, user
     algorithm: "Algorithm",
   }
 
-  const displayType = contentTypeMap[concept.contentType] || concept.contentType
+  const displayType = contentTypeMap[concept.type] || concept.type
 
   return (
     <Card className="w-full">
