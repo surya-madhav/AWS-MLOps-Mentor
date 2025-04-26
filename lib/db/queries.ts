@@ -10,6 +10,8 @@ import {
   inArray,
   lt,
   type SQL,
+  isNull,
+  or,
 } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
@@ -25,6 +27,14 @@ import {
   vote,
   type DBMessage,
   type Chat,
+  domains,
+  topics,
+  contentItems,
+  userContentProgress,
+  type Domain,
+  type Topic,
+  type ContentItem,
+  type UserContentProgress,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateHashedPassword } from './utils';
@@ -419,6 +429,516 @@ export async function updateChatVisiblityById({
     return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
+    throw error;
+  }
+}
+
+// Domain operations
+export async function getDomains() {
+  try {
+    return await db.select().from(domains).orderBy(asc(domains.orderPosition));
+  } catch (error) {
+    console.error('Failed to get domains from database');
+    throw error;
+  }
+}
+
+export async function getDomainById({ id }: { id: string }) {
+  try {
+    const [domain] = await db.select().from(domains).where(eq(domains.id, id));
+    return domain;
+  } catch (error) {
+    console.error('Failed to get domain by id from database');
+    throw error;
+  }
+}
+
+export async function createDomain({
+  name,
+  description,
+  weight,
+  orderPosition,
+}: {
+  name: string;
+  description?: string;
+  weight: number;
+  orderPosition: number;
+}) {
+  try {
+    const [domain] = await db
+      .insert(domains)
+      .values({
+        name,
+        description,
+        weight,
+        orderPosition,
+        createdAt: new Date(),
+      })
+      .returning();
+    return domain;
+  } catch (error) {
+    console.error('Failed to create domain in database');
+    throw error;
+  }
+}
+
+export async function updateDomain({
+  id,
+  name,
+  description,
+  weight,
+  orderPosition,
+}: {
+  id: string;
+  name?: string;
+  description?: string;
+  weight?: number;
+  orderPosition?: number;
+}) {
+  try {
+    const [domain] = await db
+      .update(domains)
+      .set({
+        name,
+        description,
+        weight,
+        orderPosition,
+      })
+      .where(eq(domains.id, id))
+      .returning();
+    return domain;
+  } catch (error) {
+    console.error('Failed to update domain in database');
+    throw error;
+  }
+}
+
+export async function deleteDomain({ id }: { id: string }) {
+  try {
+    return await db.delete(domains).where(eq(domains.id, id)).returning();
+  } catch (error) {
+    console.error('Failed to delete domain from database');
+    throw error;
+  }
+}
+
+// Topic operations
+export async function getTopics() {
+  try {
+    return await db.select().from(topics);
+  } catch (error) {
+    console.error('Failed to get topics from database');
+    throw error;
+  }
+}
+
+export async function getTopicsByDomainId({ domainId }: { domainId: string }) {
+  try {
+    return await db
+      .select()
+      .from(topics)
+      .where(eq(topics.domainId, domainId))
+      .orderBy(asc(topics.orderPosition));
+  } catch (error) {
+    console.error('Failed to get topics by domain id from database');
+    throw error;
+  }
+}
+
+export async function getTopicById({ id }: { id: string }) {
+  try {
+    const [topic] = await db.select().from(topics).where(eq(topics.id, id));
+    return topic;
+  } catch (error) {
+    console.error('Failed to get topic by id from database');
+    throw error;
+  }
+}
+
+export async function createTopic({
+  domainId,
+  name,
+  description,
+  orderPosition,
+}: {
+  domainId: string;
+  name: string;
+  description?: string;
+  orderPosition: number;
+}) {
+  try {
+    const [topic] = await db
+      .insert(topics)
+      .values({
+        domainId,
+        name,
+        description,
+        orderPosition,
+        createdAt: new Date(),
+      })
+      .returning();
+    return topic;
+  } catch (error) {
+    console.error('Failed to create topic in database');
+    throw error;
+  }
+}
+
+export async function updateTopic({
+  id,
+  name,
+  description,
+  orderPosition,
+}: {
+  id: string;
+  name?: string;
+  description?: string;
+  orderPosition?: number;
+}) {
+  try {
+    const [topic] = await db
+      .update(topics)
+      .set({
+        name,
+        description,
+        orderPosition,
+      })
+      .where(eq(topics.id, id))
+      .returning();
+    return topic;
+  } catch (error) {
+    console.error('Failed to update topic in database');
+    throw error;
+  }
+}
+
+export async function deleteTopic({ id }: { id: string }) {
+  try {
+    return await db.delete(topics).where(eq(topics.id, id)).returning();
+  } catch (error) {
+    console.error('Failed to delete topic from database');
+    throw error;
+  }
+}
+
+// Content Items operations
+export async function getContentItems() {
+  try {
+    return await db.select().from(contentItems);
+  } catch (error) {
+    console.error('Failed to get content items from database');
+    throw error;
+  }
+}
+
+export async function getContentItemsByTopicId({ topicId }: { topicId: string }) {
+  try {
+    return await db
+      .select()
+      .from(contentItems)
+      .where(eq(contentItems.topicId, topicId))
+      .orderBy(asc(contentItems.type), asc(contentItems.orderPosition));
+  } catch (error) {
+    console.error('Failed to get content items by topic id from database');
+    throw error;
+  }
+}
+
+export async function getContentItemsByTopicIdAndType({ 
+  topicId, 
+  type 
+}: { 
+  topicId: string;
+  type: 'concept' | 'aws_service' | 'framework' | 'algorithm';
+}) {
+  try {
+    return await db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.topicId, topicId),
+          eq(contentItems.type, type)
+        )
+      )
+      .orderBy(asc(contentItems.orderPosition));
+  } catch (error) {
+    console.error('Failed to get content items by topic id and type from database');
+    throw error;
+  }
+}
+
+export async function createContentItem({
+  topicId,
+  type,
+  content,
+  orderPosition,
+}: {
+  topicId: string;
+  type: 'concept' | 'aws_service' | 'framework' | 'algorithm';
+  content: string;
+  orderPosition: number;
+}) {
+  try {
+    const [contentItem] = await db
+      .insert(contentItems)
+      .values({
+        topicId,
+        type,
+        content,
+        orderPosition,
+        createdAt: new Date(),
+      })
+      .returning();
+    return contentItem;
+  } catch (error) {
+    console.error('Failed to create content item in database');
+    throw error;
+  }
+}
+
+export async function updateContentItem({
+  id,
+  content,
+  orderPosition,
+}: {
+  id: string;
+  content?: string;
+  orderPosition?: number;
+}) {
+  try {
+    const [contentItem] = await db
+      .update(contentItems)
+      .set({
+        content,
+        orderPosition,
+      })
+      .where(eq(contentItems.id, id))
+      .returning();
+    return contentItem;
+  } catch (error) {
+    console.error('Failed to update content item in database');
+    throw error;
+  }
+}
+
+export async function deleteContentItem({ id }: { id: string }) {
+  try {
+    return await db.delete(contentItems).where(eq(contentItems.id, id)).returning();
+  } catch (error) {
+    console.error('Failed to delete content item from database');
+    throw error;
+  }
+}
+
+// User Content Progress operations
+export async function getUserContentProgress({
+  userId,
+  contentItemId,
+}: {
+  userId: string;
+  contentItemId: string;
+}) {
+  try {
+    const [progress] = await db
+      .select()
+      .from(userContentProgress)
+      .where(
+        and(
+          eq(userContentProgress.userId, userId),
+          eq(userContentProgress.contentItemId, contentItemId)
+        )
+      );
+    return progress;
+  } catch (error) {
+    console.error('Failed to get user content progress from database');
+    throw error;
+  }
+}
+
+export async function getUserContentProgressByTopicId({
+  userId,
+  topicId,
+}: {
+  userId: string;
+  topicId: string;
+}) {
+  try {
+    // Get all content items for this topic
+    const topicContentItems = await getContentItemsByTopicId({ topicId });
+    const contentItemIds = topicContentItems.map(item => item.id);
+
+    if (contentItemIds.length === 0) return [];
+
+    // Get progress for these content items
+    return await db
+      .select()
+      .from(userContentProgress)
+      .where(
+        and(
+          eq(userContentProgress.userId, userId),
+          inArray(userContentProgress.contentItemId, contentItemIds)
+        )
+      );
+  } catch (error) {
+    console.error('Failed to get user content progress by topic id from database');
+    throw error;
+  }
+}
+
+// Optimized query to get all user learning data at once
+export async function getUserLearningData({ userId }: { userId: string }) {
+  try {
+    // Get all domains ordered by position
+    const allDomains = await getDomains();
+    
+    // For each domain, get topics and content items in parallel
+    const domainsWithData = await Promise.all(
+      allDomains.map(async (domain) => {
+        const domainTopics = await getTopicsByDomainId({ domainId: domain.id });
+        
+        // For each topic, get content items and user progress
+        const topicsWithItems = await Promise.all(
+          domainTopics.map(async (topic) => {
+            // Get all content items for this topic
+            const topicContentItems = await db
+              .select()
+              .from(contentItems)
+              .where(eq(contentItems.topicId, topic.id))
+              .orderBy(asc(contentItems.type), asc(contentItems.orderPosition));
+            
+            // Get all user progress for content items in this topic
+            const contentItemIds = topicContentItems.map(item => item.id);
+            let progressEntries: UserContentProgress[] = [];
+            
+            if (contentItemIds.length > 0) {
+              progressEntries = await db
+                .select()
+                .from(userContentProgress)
+                .where(
+                  and(
+                    eq(userContentProgress.userId, userId),
+                    inArray(userContentProgress.contentItemId, contentItemIds)
+                  )
+                );
+            }
+            
+            // Attach progress to each content item
+            const itemsWithProgress = topicContentItems.map(item => {
+              const progress = progressEntries.find(p => p.contentItemId === item.id);
+              return {
+                ...item,
+                progress: progress || null
+              };
+            });
+            
+            // Group content items by type
+            const groupedItems = itemsWithProgress.reduce((groups, item) => {
+              const type = item.type;
+              if (!groups[type]) {
+                groups[type] = [];
+              }
+              groups[type].push(item);
+              return groups;
+            }, {} as Record<string, any[]>);
+            
+            // Calculate topic progress
+            const completedItems = progressEntries.filter(p => p.isCompleted).length;
+            const totalItems = topicContentItems.length;
+            const progressPercentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+            
+            return {
+              ...topic,
+              content_items: groupedItems,
+              progress: {
+                completed: completedItems,
+                total: totalItems,
+                percentage: progressPercentage
+              }
+            };
+          })
+        );
+        
+        // Calculate domain progress
+        const domainCompletedItems = topicsWithItems.reduce(
+          (sum, topic) => sum + topic.progress.completed, 0
+        );
+        const domainTotalItems = topicsWithItems.reduce(
+          (sum, topic) => sum + topic.progress.total, 0
+        );
+        const domainProgressPercentage = 
+          domainTotalItems > 0 ? (domainCompletedItems / domainTotalItems) * 100 : 0;
+        
+        return {
+          ...domain,
+          topics: topicsWithItems,
+          progress: {
+            completed: domainCompletedItems,
+            total: domainTotalItems,
+            percentage: domainProgressPercentage
+          }
+        };
+      })
+    );
+    
+    return domainsWithData;
+  } catch (error) {
+    console.error('Failed to get user learning data from database');
+    throw error;
+  }
+}
+
+export async function updateUserContentProgress({
+  userId,
+  contentItemId,
+  isCompleted,
+  notes,
+  videos,
+}: {
+  userId: string;
+  contentItemId: string;
+  isCompleted?: boolean;
+  notes?: any;
+  videos?: any;
+}) {
+  try {
+    const existingProgress = await getUserContentProgress({ userId, contentItemId });
+    
+    if (existingProgress) {
+      // Update existing progress
+      const [updated] = await db
+        .update(userContentProgress)
+        .set({
+          isCompleted: isCompleted ?? existingProgress.isCompleted,
+          notes: notes !== undefined ? notes : existingProgress.notes,
+          videos: videos !== undefined ? videos : existingProgress.videos,
+          lastUpdated: new Date(),
+        })
+        .where(
+          and(
+            eq(userContentProgress.userId, userId),
+            eq(userContentProgress.contentItemId, contentItemId)
+          )
+        )
+        .returning();
+      return updated;
+    } else {
+      // Create new progress entry
+      const [created] = await db
+        .insert(userContentProgress)
+        .values({
+          userId,
+          contentItemId,
+          isCompleted: isCompleted ?? false,
+          notes,
+          videos,
+          lastUpdated: new Date(),
+        })
+        .returning();
+      return created;
+    }
+  } catch (error) {
+    console.error('Failed to update user content progress in database');
     throw error;
   }
 }

@@ -9,6 +9,9 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  integer,
+  index,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -150,3 +153,93 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+// Learning/Education Feature Tables
+
+// Domains table for knowledge areas/subjects
+export const domains = pgTable('Domains', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  name: text('name').notNull(),
+  description: text('description'),
+  weight: integer('weight').notNull(),
+  orderPosition: integer('order_position').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+// Topics table for specific topics within domains
+export const topics = pgTable(
+  'Topics',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    domainId: uuid('domain_id')
+      .notNull()
+      .references(() => domains.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    description: text('description'),
+    orderPosition: integer('order_position').notNull(),
+    createdAt: timestamp('createdAt').notNull().defaultNow(),
+  },
+  (table) => {
+    return {
+      domainIdx: index('domain_id_idx').on(table.domainId),
+    };
+  },
+);
+
+// Content items table (concepts, AWS services, algorithms, frameworks)
+export const contentItems = pgTable(
+  'ContentItems',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    topicId: uuid('topic_id')
+      .notNull()
+      .references(() => topics.id, { onDelete: 'cascade' }),
+    type: varchar('type', {
+      enum: ['concept', 'aws_service', 'framework', 'algorithm'],
+    }).notNull(),
+    content: text('content'),
+    orderPosition: integer('order_position').notNull(),
+    createdAt: timestamp('createdAt').notNull().defaultNow(),
+  },
+  (table) => {
+    return {
+      topicIdx: index('topic_id_idx').on(table.topicId),
+      typeIdx: index('type_idx').on(table.type),
+      topicTypeIdx: index('topic_type_idx').on(table.topicId, table.type),
+    };
+  },
+);
+
+// User content progress table
+export const userContentProgress = pgTable(
+  'UserContentProgress',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    contentItemId: uuid('content_item_id')
+      .notNull()
+      .references(() => contentItems.id, { onDelete: 'cascade' }),
+    isCompleted: boolean('is_completed').notNull().default(false),
+    notes: json('notes'),
+    videos: json('videos'),
+    lastUpdated: timestamp('last_updated').notNull().defaultNow(),
+  },
+  (table) => {
+    return {
+      userIdx: index('user_id_idx').on(table.userId),
+      contentItemIdx: index('content_item_id_idx').on(table.contentItemId),
+      userContentItemIdx: uniqueIndex('user_content_item_idx').on(
+        table.userId,
+        table.contentItemId,
+      ),
+    };
+  },
+);
+
+// Export types for the new tables
+export type Domain = InferSelectModel<typeof domains>;
+export type Topic = InferSelectModel<typeof topics>;
+export type ContentItem = InferSelectModel<typeof contentItems>;
+export type UserContentProgress = InferSelectModel<typeof userContentProgress>;

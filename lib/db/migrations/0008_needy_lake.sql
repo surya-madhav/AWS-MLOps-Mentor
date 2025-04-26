@@ -1,0 +1,1 @@
+ALTER TABLE "ContentItems" ALTER COLUMN "content" DROP NOT NULL;
