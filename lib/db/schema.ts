@@ -197,7 +197,8 @@ export const contentItems = pgTable(
     type: varchar('type', {
       enum: ['concept', 'aws_service', 'framework', 'algorithm'],
     }).notNull(),
-    content: text('content'),
+    name: text('name').notNull(),
+    content: text('content').notNull(),
     orderPosition: integer('order_position').notNull(),
     createdAt: timestamp('createdAt').notNull().defaultNow(),
   },
