@@ -9,7 +9,7 @@ const { auth } = NextAuth(authConfig);
 export default auth;
 
 export async function middleware(request: NextRequest) {
-  const session = await auth(request);
+  const session = await auth(request as any);
 
   // Redirect root to dashboard for authenticated users
   if (session && request.nextUrl.pathname === '/') {
