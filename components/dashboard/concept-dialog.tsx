@@ -12,9 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
-
-// Import your existing artifact components for markdown display
-import { Markdown } from "@/components/markdown"
+import { Markdown } from '@/components/ui/markdown';
 
 interface ConceptDialogProps {
   concept: any
@@ -110,14 +108,23 @@ export default function ConceptDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogOverlay className={cn(isFullscreen && "bg-background")} />
+      <DialogOverlay className={cn(isFullscreen && 'bg-background')} />
       <DialogContent
-        className={cn("p-0 max-w-4xl", isFullscreen && "w-screen h-screen max-w-none max-h-none rounded-none")}
+        className={cn(
+          'p-0 max-w-4xl',
+          isFullscreen &&
+            'w-screen h-screen max-w-none max-h-none rounded-none',
+        )}
       >
         <div className="flex flex-col h-full max-h-[90vh]">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => onNavigate?.("prev")} disabled={!hasPrev}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onNavigate?.('prev')}
+                disabled={!hasPrev}
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
 
@@ -128,14 +135,27 @@ export default function ConceptDialog({
                 </Badge>
               </div>
 
-              <Button variant="ghost" size="icon" onClick={() => onNavigate?.("next")} disabled={!hasNext}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onNavigate?.('next')}
+                disabled={!hasNext}
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setIsFullscreen(!isFullscreen)}>
-                {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsFullscreen(!isFullscreen)}
+              >
+                {isFullscreen ? (
+                  <Minimize className="h-4 w-4" />
+                ) : (
+                  <Maximize className="h-4 w-4" />
+                )}
               </Button>
               <Button variant="ghost" size="icon" onClick={onClose}>
                 <X className="h-4 w-4" />
@@ -153,7 +173,8 @@ export default function ConceptDialog({
 
               <TabsContent value="content" className="px-6 py-4">
                 <div className="prose max-w-none dark:prose-invert">
-                  <Markdown>{concept.content}</Markdown>
+                  {/* Pass the concept name to the Markdown component */}
+                  <Markdown conceptName={concept.name}>{concept.content}</Markdown>
                 </div>
               </TabsContent>
 
@@ -171,7 +192,10 @@ export default function ConceptDialog({
                   {videos.length > 0 ? (
                     <div className="space-y-2">
                       {videos.map((video, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                        <div
+                          key={video.url}
+                          className="flex items-center justify-between p-2 border rounded-md"
+                        >
                           <div className="flex items-center gap-2">
                             <Youtube className="h-4 w-4 text-red-500" />
                             <a
@@ -183,14 +207,20 @@ export default function ConceptDialog({
                               {video.title}
                             </a>
                           </div>
-                          <Button variant="ghost" size="sm" onClick={() => handleRemoveVideo(index)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveVideo(index)}
+                          >
                             <X className="h-3 w-3" />
                           </Button>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">No videos added yet.</p>
+                    <p className="text-sm text-muted-foreground">
+                      No videos added yet.
+                    </p>
                   )}
 
                   <div className="space-y-2">
@@ -216,7 +246,11 @@ export default function ConceptDialog({
 
           <div className="flex justify-between items-center p-4 border-t">
             <div className="flex items-center space-x-2">
-              <Switch id="completed" checked={isCompleted} onCheckedChange={setIsCompleted} />
+              <Switch
+                id="completed"
+                checked={isCompleted}
+                onCheckedChange={setIsCompleted}
+              />
               <Label htmlFor="completed">Mark as completed</Label>
             </div>
 
@@ -228,5 +262,5 @@ export default function ConceptDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
