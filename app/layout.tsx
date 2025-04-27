@@ -1,5 +1,6 @@
 import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { MiniSidebar } from '@/components/mini-sidebar';
@@ -68,6 +69,10 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: THEME_COLOR_SCRIPT,
           }}
+        />
+        <Script
+          src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"
+          strategy="beforeInteractive"
         />
       </head>
       <body className="antialiased">
