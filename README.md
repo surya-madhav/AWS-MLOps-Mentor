@@ -15,6 +15,7 @@
 
 *A comprehensive learning platform designed specifically for AWS Machine Learning Specialty certification preparation*
 
+[Project URL:](https://aws-ml-ops-mentor-lwvt.vercel.app/)
 </div>
 
 
