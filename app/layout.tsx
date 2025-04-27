@@ -5,7 +5,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { MiniSidebar } from '@/components/mini-sidebar';
 import { auth } from './(auth)/auth';
-
+import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 
 export const metadata: Metadata = {
