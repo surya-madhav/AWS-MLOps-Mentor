@@ -36,7 +36,10 @@ export default function Page() {
       });
     } else if (state.status === 'success') {
       setIsSuccessful(true);
-      router.push('/dashboard');
+      // Add delay before redirect to let UI update
+      setTimeout(() => {
+        router.replace('/dashboard');
+      }, 500);
     }
   }, [state.status, router]);
 

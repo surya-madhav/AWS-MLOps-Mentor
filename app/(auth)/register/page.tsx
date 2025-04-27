@@ -23,23 +23,25 @@ export default function Page() {
     },
   );
 
-  useEffect(() => {
-    if (state.status === 'user_exists') {
-      toast({ type: 'error', description: 'Account already exists!' });
-    } else if (state.status === 'failed') {
-      toast({ type: 'error', description: 'Failed to create account!' });
-    } else if (state.status === 'invalid_data') {
-      toast({
-        type: 'error',
-        description: 'Failed validating your submission!',
-      });
-    } else if (state.status === 'success') {
-      toast({ type: 'success', description: 'Account created successfully!' });
-
-      setIsSuccessful(true);
-      router.refresh();
-    }
-  }, [state]);
+ useEffect(() => {
+   if (state.status === 'user_exists') {
+     toast({ type: 'error', description: 'Account already exists!' });
+   } else if (state.status === 'failed') {
+     toast({ type: 'error', description: 'Failed to create account!' });
+   } else if (state.status === 'invalid_data') {
+     toast({
+       type: 'error',
+       description: 'Failed validating your submission!',
+     });
+   } else if (state.status === 'success') {
+     toast({ type: 'success', description: 'Account created successfully!' });
+     setIsSuccessful(true);
+     // Add delay before redirect to let UI update
+     setTimeout(() => {
+       router.replace('/dashboard');
+     }, 500);
+   }
+ }, [state.status, router]);
 
   const handleSubmit = (formData: FormData) => {
     setEmail(formData.get('email') as string);

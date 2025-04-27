@@ -1,17 +1,20 @@
-import Form from 'next/form';
+'use client';
 
+import { useRouter } from 'next/navigation';
 import { signOut } from '@/app/(auth)/auth';
 
 export const SignOutForm = () => {
+  const router = useRouter();
+  
   return (
-    <Form
+    <form
       className="w-full"
-      action={async () => {
-        'use server';
-
+      onSubmit={async (e) => {
+        e.preventDefault();
         await signOut({
           redirectTo: '/',
         });
+        router.push('/'); // Ensure client-side navigation
       }}
     >
       <button
@@ -20,6 +23,6 @@ export const SignOutForm = () => {
       >
         Sign out
       </button>
-    </Form>
+    </form>
   );
 };

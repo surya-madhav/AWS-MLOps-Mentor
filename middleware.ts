@@ -9,9 +9,21 @@ const { auth } = NextAuth(authConfig);
 export default auth;
 
 export async function middleware(request: NextRequest) {
+  // Check if the path is public (login or register)
+  const isPublicPath = ['/login', '/register'].includes(request.nextUrl.pathname);
+
+  // Get user session
   const session = await auth(request as any);
 
-  // Redirect root to dashboard for authenticated users
+  // Allow access to public paths
+  if (isPublicPath) {
+    return NextResponse.next();
+  }
+
+  // Redirect to login if not authenticated
+  if (!session) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
   return NextResponse.next();
 }
