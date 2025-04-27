@@ -13,26 +13,31 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'Generate sample code to',
+      label: 'train a model using SageMaker',
+      action:
+        'Generate sample code to train and deploy a model using AWS SageMaker',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'Write a report on',
+      label: 'Amazon SageMaker vs EC2 for ML training',
+      action:
+        'Write a report comparing Amazon SageMaker and EC2 for machine learning training workloads',
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'Explain how to',
+      label: 'optimize hyperparameters in AWS',
+      action:
+        'Explain how to use Amazon SageMaker Automatic Model Tuning for hyperparameter optimization',
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'What are the best practices',
+      label: 'for ML model deployment on AWS?',
+      action:
+        'What are the best practices for deploying machine learning models on AWS securely and cost-effectively?',
     },
   ];
+  
 
   return (
     <div
