@@ -26,7 +26,7 @@ This platform provides a guided learning experience for mastering AWS Machine Le
 > 💡 **Built for AWS ML learners, by AWS ML experts.**
 > 
 > This platform offers a hands-on approach to learning AWS machine learning services, with a focus on practical skills and certification preparation.
-
+![alt text](landing.png)
 ## 🚀 Key Features
 
 ### 1. Advanced CRAG (Context Retrieval Augmented Generation)
@@ -43,10 +43,10 @@ This platform provides a guided learning experience for mastering AWS Machine Le
 
 </kbd>
 
-![CRAG](image.png)
+![CRAG](CRAG.png)
 
 ### 2. 💻 Code Running Sandbox
-
+![alt text](image-1.png)
 <kbd>
 
 - **Interactive Code Execution**: Python, JavaScript, and other language code execution directly in the browser
@@ -57,6 +57,7 @@ This platform provides a guided learning experience for mastering AWS Machine Le
 </kbd>
 
 ### 3. 🎨 ChatGPT-styled Canvas Implementation
+![alt text](image-2.png)
 
 <kbd>
 
@@ -68,6 +69,8 @@ This platform provides a guided learning experience for mastering AWS Machine Le
 </kbd>
 
 ### 4. 📚 Comprehensive Learning Guide
+
+![alt text](image.png)
 
 <kbd>
 
