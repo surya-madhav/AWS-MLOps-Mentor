@@ -17,9 +17,7 @@
 
 </div>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/aws/aws-amplify/main/public/images/aws.png" alt="AWS logo" width="160" style="margin-right: 20px;"/>
-</p>
+
 
 ## ✨ Overview
 
@@ -44,6 +42,8 @@ This platform provides a guided learning experience for mastering AWS Machine Le
 - **Supabase Vector Store**: Efficient storage and retrieval of embedding vectors for semantic search
 
 </kbd>
+
+![CRAG](image.png)
 
 ### 2. 💻 Code Running Sandbox
 
