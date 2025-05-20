@@ -22,7 +22,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   const { setOpenMobile } = useSidebar();
 
   return (
-    <Sidebar className="ml-14 group-data-[side=left]:border-r-0">
+    <Sidebar className="ml-24 h-[calc(100vh-2rem)] my-4 flex flex-col items-center bg-background/80 backdrop-blur-md rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.05)] border border-border/50 transition-all duration-300 overflow-hidden group-data-[side=left]:border-r-0">
       <SidebarHeader>
         <SidebarMenu>
           <div className="flex flex-row justify-between items-center">

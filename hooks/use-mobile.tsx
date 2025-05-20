@@ -1,6 +1,34 @@
+'use client';
+
+
 import * as React from 'react';
 
 const MOBILE_BREAKPOINT = 768;
+import { useState, useEffect } from 'react';
+
+export const useMediaQuery = (query: string): boolean => {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+
+    const handleChange = () => {
+      setMatches(mediaQuery.matches);
+    };
+
+    // Set initial value
+    setMatches(mediaQuery.matches);
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, [query]);
+
+  return matches;
+};
+
+
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(

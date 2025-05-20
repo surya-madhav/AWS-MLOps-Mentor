@@ -83,9 +83,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {isLoggedIn && <MiniSidebar user={session.user} />}
-          <main className={isLoggedIn ? "ml-14" : ""}>
-            {children}
-          </main>
+          <main className={isLoggedIn ? 'ml-14' : ''}>{children}</main>
           <Toaster position="top-center" />
         </ThemeProvider>
       </body>
