@@ -31,8 +31,9 @@ export function MiniSidebar({ user }: { user: User | undefined }) {
     return null;
   }
 
-  const isDashboardActive = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
-  const isChatActive = pathname === '/chat' || pathname.startsWith('/chat/');
+  const isDashboardActive =
+    pathname === '/dashboard' || pathname?.startsWith('/dashboard/');
+  const isChatActive = pathname === '/chat' || pathname?.startsWith('/chat/');
 
   return (
     <TooltipProvider>
