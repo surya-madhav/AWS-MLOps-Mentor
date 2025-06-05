@@ -114,7 +114,7 @@ export default function ConceptDetail({ concept, onClose, onUpdateProgress, user
             {videos.length > 0 ? (
               <div className="space-y-2">
                 {videos.map((video, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                  <div key={video.url} className="flex items-center justify-between p-2 border rounded-md">
                     <div className="flex items-center gap-2">
                       <Youtube className="h-4 w-4 text-red-500" />
                       <a href={video.url} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">
