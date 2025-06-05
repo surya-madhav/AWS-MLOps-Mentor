@@ -85,7 +85,7 @@ export default function ConceptsGrid({ topic, userId }: ConceptsGridProps) {
     const currentIndex = filteredConcepts.findIndex((c) => c.id === selectedConceptId)
     if (currentIndex === -1) return
 
-    let newIndex
+    let newIndex: number
     if (direction === "next" && currentIndex < filteredConcepts.length - 1) {
       newIndex = currentIndex + 1
     } else if (direction === "prev" && currentIndex > 0) {

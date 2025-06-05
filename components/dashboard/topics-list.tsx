@@ -16,6 +16,7 @@ export default function TopicsList({
         {topics.map((topic) => (
           <li key={topic.id}>
             <button
+              type="button"
               onClick={() => onSelectTopic(topic.id)}
               className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
                 selectedTopicId === topic.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
